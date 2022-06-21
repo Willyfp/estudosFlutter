@@ -1,7 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:segundo_bimestre/pages/home.page.dart';
 import 'package:segundo_bimestre/pages/register.page.dart';
+import 'package:segundo_bimestre/auth.service.dart';
+import 'package:provider/provider.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+
+  LoginPage({Key? key}) : super(key: key);
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final formKey = GlobalKey<FormState>();
+  final email = TextEditingController();
+  final senha = TextEditingController();
+
+  bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  login() async {
+    setState(() => loading = true);
+    try {
+      await context.read<AuthService>().login(email.text, senha.text);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
+    } on AuthException catch (e) {
+      setState(() => loading = false);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +66,7 @@ class LoginPage extends StatelessWidget {
               height: 20,
             ),
             TextFormField(
+              controller: email,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText: "E-mail",
@@ -44,6 +84,7 @@ class LoginPage extends StatelessWidget {
               height: 10,
             ),
             TextFormField(
+              controller: senha,
               keyboardType: TextInputType.text,
               obscureText: true,
               decoration: InputDecoration(
@@ -99,7 +140,11 @@ class LoginPage extends StatelessWidget {
                     ),
                     textAlign: TextAlign.left,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) { //Erro aqui
+                      login();
+                    }
+                  },
                 ),
               ),
             ),
