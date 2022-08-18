@@ -141,9 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                     textAlign: TextAlign.left,
                   ),
                   onPressed: () {
-                    if (formKey.currentState!.validate()) { //Erro aqui
                       login();
-                    }
                   },
                 ),
               ),
